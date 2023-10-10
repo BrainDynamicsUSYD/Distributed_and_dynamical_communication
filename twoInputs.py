@@ -47,7 +47,7 @@ if not os.path.exists(data_dir):
 #%%    **
 sys_argv = int(sys.argv[1])
 #%%
-record_LFP = False # if true, record LFP signal
+record_LFP = True # if true, record LFP signal
 #%%
 loop_num = -1
 
