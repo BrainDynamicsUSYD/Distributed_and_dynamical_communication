@@ -62,7 +62,7 @@ for rp in [None]*repeat:
     else: continue
     break
 
-if loop_num != sys_argv: sys.exit("Error: wrong PBS_array_id")                    
+if loop_num != sys_argv: sys.exit("Error: wrong command line argument! \nThe argument must be an integer from 0 to %d; to change its upper bound, please change the 'repeat' variable."%(repeat-1))                    
 
 const_seed = True # if True, manually set the seed of random number generator
     
