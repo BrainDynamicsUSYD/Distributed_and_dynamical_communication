@@ -575,7 +575,7 @@ spk_mat_e2 = get_sparse_spk_matrix(spk_e_2.i[:], spk_tstep_e2, [ijwd2.Ne, simu_t
 spk_mat_i2 = get_sparse_spk_matrix(spk_i_2.i[:], spk_tstep_i2, [ijwd2.Ni, simu_time_tot*10])
 
 
-data = {'datetime':now.strftime("%Y-%m-%d %H:%M:%S"), 'dt':0.1, 'loop_num':loop_num, 'data_dir': os.getcwd(),
+data_save = {'datetime':now.strftime("%Y-%m-%d %H:%M:%S"), 'dt':0.1, 'loop_num':loop_num, 'data_dir': os.getcwd(),
         'param':param_all,
         'a1':{'param':param_a1,
               'ge':{'t_ind': spk_mat_e1.indices, 't_indptr': spk_mat_e1.indptr},    
@@ -586,17 +586,21 @@ data = {'datetime':now.strftime("%Y-%m-%d %H:%M:%S"), 'dt':0.1, 'loop_num':loop_
         'inter':{'param':param_inter}}
 
 if record_LFP:
-    data['a1']['ge']['LFP'] = lfp_moni_1.lfp[:]/nA
-    data['a2']['ge']['LFP'] = lfp_moni_2.lfp[:]/nA
+    data_save['a1']['ge']['LFP'] = lfp_moni_1.lfp[:]/nA
+    data_save['a2']['ge']['LFP'] = lfp_moni_2.lfp[:]/nA
 
 
 with open(data_dir+'data%d.file'%loop_num, 'wb') as file:
-    pickle.dump(data, file)
+    pickle.dump(data_save, file)
 
 
 #%%
 import firing_rate_analysis as fra
 import matplotlib.pyplot as plt
+
+'''load data'''
+data = mydata.mydata()
+data.load(data_dir+'data%d.file'%loop_num)
 
 ''' produce animation '''
 
