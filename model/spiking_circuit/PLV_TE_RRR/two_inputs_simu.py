@@ -56,7 +56,7 @@ record_LFP = True # if true, record LFP signal
 #%%
 loop_num = -1
 
-repeat = 30 # the number of random realizations of the network;
+repeat = 30 # the number of total random realizations of the network;
 for rp in [None]*repeat:
     loop_num += 1
     if loop_num == sys_argv: 
@@ -69,7 +69,7 @@ for rp in [None]*repeat:
 
 if loop_num != sys_argv: sys.exit("Error: wrong command line argument! \nThe argument must be an integer from 0 to %d; to change its upper bound, please change the 'repeat' variable."%(repeat-1))                    
 
-const_seed = True # if True, manually set the seed of random number generator
+const_seed = True # if True, manually set the seed of random number generator as the 'loop_num'
     
 tau_k_ = 60 # ms; decay time constant of adaptation current
 
@@ -608,6 +608,12 @@ if get_movie:
     '''load data'''
     data = mydata.mydata()
     data.load(data_dir+'data%d.file'%loop_num)
+    
+    simu_time_tot = data.param.simutime
+    data.a1.ge.get_sparse_spk_matrix_csrindptr([data.a1.param.Ne, simu_time_tot*10], mat_type='csc')
+    data.a2.ge.get_sparse_spk_matrix_csrindptr([data.a2.param.Ne, simu_time_tot*10], mat_type='csc')
+    data.a1.ge.get_spk_it()
+    data.a2.ge.get_spk_it()
     
     ''' make movie '''
     

@@ -35,7 +35,7 @@ See "https://jlizier.github.io/jidt/" for more information about this toolkit.
 
 '''
 
-jarLocation = '/headnode1/shni2598/infodynamics/infodynamics.jar'
+jarLocation = 'PATH_to_/infodynamics.jar'
 # Path to the 'infodynamics.jar'. Replace it with your path to 'infodynamics.jar'.
 
 startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation)
