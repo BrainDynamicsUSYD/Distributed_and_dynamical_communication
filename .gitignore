@@ -1,0 +1,11 @@
+cache/
+cache*/
+__pycache__/
+results/
+RRR_results/
+run*.sh
+var/
+raw_data/
+fig_movi
+onearea.o*
+

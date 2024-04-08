@@ -4,6 +4,15 @@ function RRR(varargin)
 % See "Cortical areas interact through a communication subspace", Semedo et al. (Neuron, 2019) and 'https://github.com/joao-semedo/communication-subspace' 
 % Run 'onoff_detection.py', 'extractDataforRRRforEachNet.py' and 'combineDataforRRR.py' before running this script.
 
+cd '~/brian2/codeforpaper/commbio/Distributed_and_dynamical_communication/analysis/sub_space'         
+addpath('.')
+startup
+cd ../../model/spiking_circuit/two_inputs/
+
+%cd ../../../analysis/sub_space
+%addpath('.')
+%startup
+%cd ../model/spiking_circuit/two_inputs/
 
 rng(1)
 save_fig = 1;
@@ -48,10 +57,10 @@ saveFigSuffix = ['_syncUnsync_lc_rg5',rv]; % _whole
 
 %%
 
-load(['raw_data/noatt_rg5_ctrsua_sync_local_subM1_st2.mat'])
-load(['raw_data/noatt_rg5_ctrsua_unsync_local_subM1_st2.mat'])
-load(['raw_data/att_rg5_ctrsua_sync_local_subM1_st2.mat'])
-load(['raw_data/att_rg5_ctrsua_unsync_local_subM1_st2.mat'])
+load(['raw_data/noatt_rg5_ctrsua_sync_local_subM1_comb.mat'])
+load(['raw_data/noatt_rg5_ctrsua_unsync_local_subM1_comb.mat'])
+load(['raw_data/att_rg5_ctrsua_sync_local_subM1_comb.mat'])
+load(['raw_data/att_rg5_ctrsua_unsync_local_subM1_comb.mat'])
 
 
 if topdown

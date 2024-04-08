@@ -35,7 +35,7 @@ See "https://jlizier.github.io/jidt/" for more information about this toolkit.
 
 '''
 
-jarLocation = '~/infodynamics.jar'
+jarLocation = '/headnode1/shni2598/infodynamics/infodynamics.jar'
 # Path to the 'infodynamics.jar'. Replace it with your path to 'infodynamics.jar'.
 
 startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation)
@@ -177,7 +177,7 @@ def get_mua(spk_posi, get_att, analy_Sync):
     
     print(loop_num)
     data.load(datapath+'data%d.file'%loop_num)
-    data_anly.load(dataAnaly_path+'data_anly_onoff_testthres_win10_min10_smt1_mtd1_%s%d.file'%(spk_posi,loop_num)) # data_anly_onoff_thres_cor; data_anly_onoff_thres
+    data_anly.load(dataAnaly_path+'data_anly_onoff_testthres_win10_min10_smt1_mtd1_%s_%d.file'%(spk_posi,loop_num)) # data_anly_onoff_thres_cor; data_anly_onoff_thres
 
     n_perStimAmp = data.a1.param.stim1.n_perStimAmp
     n_StimAmp = data.a1.param.stim1.n_StimAmp

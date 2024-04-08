@@ -55,7 +55,7 @@ datapath = '' + data_dir
 dataAnaly_dir = 'raw_data/' # 'raw_data/cor/'
 dataAnaly_path = '' + dataAnaly_dir
 
-data_onoff_name = 'data_anly_onoff_testthres_win10_min10_smt1_mtd1_ctr'
+data_onoff_name = 'data_anly_onoff_testthres_win10_min10_smt1_mtd1_ctr_'
 
 #%%
 

@@ -22,6 +22,7 @@ import time
 import mydata
 import os
 import datetime
+import connection as cn
 import poisson_stimuli as psti
 import pre_process_sc
 import preprocess_2area
@@ -86,7 +87,8 @@ tau_s_de_ = 5 # ms; decay time constant of post-synaptic excitatory current
 
 delta_gk_1 = 1.9 # nS; baseline value of adaptation strength in sensory area
 
-stim_dura = 600 # ms; duration of the presentation of each stimulus on each trial
+stim_dura = 10000 # ms; duration of the presentation of each stimulus on each trial
+num_trials = 20 # number of trials
 
 t_ref = 4 # ms; refractory period
 
@@ -319,7 +321,7 @@ elif adapt_change_shape == 'logi':
 '''uncued'''
 stim_scale_cls = get_stim_scale.get_stim_scale()
 stim_scale_cls.seed = 10
-n_perStimAmp = 20 # number of trials for each stimulus strength
+n_perStimAmp = num_trials # number of trials for each stimulus strength
 if not isinstance(stim_amp, np.ndarray):
     stim_amp = np.array([stim_amp])
 n_StimAmp = stim_amp.shape[0] # number of different stimulus strength
@@ -345,7 +347,7 @@ stim_scale_cls.stim_on += transient
 stim_scale_cls_att = get_stim_scale.get_stim_scale()
 stim_scale_cls_att.seed = 15
 n_StimAmp = stim_amp.shape[0]
-n_perStimAmp = 20
+n_perStimAmp = num_trials
 stim_amp_scale = np.ones(n_StimAmp*n_perStimAmp)
 for i in range(n_StimAmp):
     stim_amp_scale[i*n_perStimAmp:i*n_perStimAmp+n_perStimAmp] = stim_amp[i]/200
@@ -530,8 +532,7 @@ print('total time elapsed:',np.round((time.perf_counter() - tic)/60,2), 'min')
 '''save data'''
 now = datetime.datetime.now()
 
-param_all = {'att':att,
-            'I_extnl':I_extnl_,
+param_all = {'I_extnl':I_extnl_,
              'pois_extnl_r_1':pois_extnl_r_1,
              'pois_extnl_r_2':pois_extnl_r_2,
         'delta_gk_1':delta_gk_1,

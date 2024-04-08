@@ -17,5 +17,5 @@ from connection import coordination
 #from connection import pre_process
 from connection import findnearbyneuron
 from connection import model_neu_syn_AD
-from connection import model_neu_syn_YG
+#from connection import model_neu_syn_YG
 

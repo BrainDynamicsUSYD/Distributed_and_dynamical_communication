@@ -20,7 +20,7 @@ import scipy.io as sio
 dataAnaly_dir = 'raw_data/'
 dataAnaly_path = dataAnaly_dir # path to the SUA data of each network
 
-repeat = 30 # number of random network realizations
+repeat = 1 # number of total random network realizations
 
 data_anly = mydata.mydata()
 
@@ -28,7 +28,7 @@ name_sfx = '' #
 unsyncType = 'bothOff'  #  
 mua_range = 5
 substract_mean = True
-stn = 'st2'
+# stn = 'st2'
 for spk_posi in ['ctr']: # 'cor' ctr
     for sfx in ['ctr']:
         for get_att in [0, 1]:
@@ -62,6 +62,6 @@ for spk_posi in ['ctr']: # 'cor' ctr
                 spk_count = {'a1_rg%d_%ssua_%s_%s_lc_%s%s'%(mua_range,spk_posi,sync_n,att_n, sfx, name_sfx):MUA_1_all_net_, \
                              'a2_rg%d_%ssua_%s_%s_lc_%s%s'%(mua_range,spk_posi,sync_n,att_n, sfx, name_sfx):MUA_2_all_net_} # a2_mua_sync_ext_cor
                 
-                matfile_name = '%s_rg%d_%ssua_%s_local_subM%d_%s.mat'%(att_n, mua_range,spk_posi,sync_n, substract_mean, stn)
+                matfile_name = '%s_rg%d_%ssua_%s_local_subM%d_comb.mat'%(att_n, mua_range,spk_posi,sync_n, substract_mean,)
 
                 sio.savemat('raw_data/'+matfile_name, spk_count)

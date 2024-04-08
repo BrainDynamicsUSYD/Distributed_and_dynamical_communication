@@ -136,7 +136,7 @@ def onoff_analysis(findonoff, spk_mat, mua_neuron, analy_dura_stim, ignore_respT
     fig.suptitle(title + save_apd + '_spon_on-off; plot')
     
     savetitle = title.replace('\n','')
-    onofffile = savetitle+'_spon_t'+save_apd+'_%d'%(loop_num)+'.png'
+    onofffile = savetitle+'_spon_t'+save_apd+'%d'%(loop_num)+'.png'
     if savefig : 
         fig.savefig(save_fig_dir + onofffile)
         plt.close()
@@ -164,7 +164,7 @@ def onoff_analysis(findonoff, spk_mat, mua_neuron, analy_dura_stim, ignore_respT
     fig.suptitle(title + save_apd + '_spon_on-off dist')
     
     savetitle = title.replace('\n','')
-    onofffile = savetitle+'_spon_dis'+save_apd+'_%d'%(loop_num)+'.png'
+    onofffile = savetitle+'_spon_dis'+save_apd+'%d'%(loop_num)+'.png'
     if savefig :
         fig.savefig(save_fig_dir + onofffile)
         plt.close()
@@ -259,7 +259,7 @@ def onoff_analysis(findonoff, spk_mat, mua_neuron, analy_dura_stim, ignore_respT
         fig.suptitle(title + save_apd + '_stim: %.1f hz'%stim_amp[n])
     
         savetitle = title.replace('\n','')
-        onofffile = savetitle+'_stim%d_t'%n+save_apd+'_%d'%(loop_num)+'.png'
+        onofffile = savetitle+'_stim%d_t'%n+save_apd+'%d'%(loop_num)+'.png'
         if savefig :
             fig.savefig(save_fig_dir + onofffile)
             plt.close()      
@@ -306,7 +306,7 @@ def onoff_analysis(findonoff, spk_mat, mua_neuron, analy_dura_stim, ignore_respT
         fig.suptitle(title + save_apd + '_stim: %.1f hz'%stim_amp[n])
     
         savetitle = title.replace('\n','')
-        onofffile = savetitle+'_stim%d_dis'%n+save_apd+'_%d'%(loop_num)+'.png'
+        onofffile = savetitle+'_stim%d_dis'%n+save_apd+'%d'%(loop_num)+'.png'
         if savefig :
             fig.savefig(save_fig_dir + onofffile)
             plt.close() 
@@ -386,7 +386,7 @@ for n in range(len(stim_amp)):
     
     savetitle = title + '_testthre_stim%d'%n + save_apd_thre
     savetitle = savetitle.replace('\n','')
-    savetitle = savetitle+'_%d'%(loop_num)+'.png'
+    savetitle = savetitle+'%d'%(loop_num)+'.png'
     
     if save_img :
         fig.savefig(save_fig_dir + savetitle)
