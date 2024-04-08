@@ -6,28 +6,32 @@ Created on Thu Aug 19 12:00:58 2021
 @author: Shencong Ni
 """
 
+'''
+Detect the On/Off states.
+Run 'two_inputs_simu.py' before running this script.
+'''
+
+
 
 import matplotlib as mpl
 mpl.use('Agg')
-# import scipy.stats
 import mydata
 import numpy as np
 import firing_rate_analysis as fra
 # import frequency_analysis as fqa
 import detect_onoff
 import connection as cn
-# import pickle
 import sys
 import os
 import matplotlib.pyplot as plt
-# import shutil
+
 #%%
 datapath = 'raw_data/' # path to data
 sys_argv = int(sys.argv[1])
 loop_num = sys_argv 
 
 onoff_thre_method = '1'
-apd = 'win10_min10_smt1_mtd%s_ctr'%onoff_thre_method #
+apd = 'win10_min10_smt1_mtd%s_ctr_'%onoff_thre_method #
 
 savefile_name = 'data_anly_onoff_testthres_%s'%apd 
 
@@ -66,8 +70,8 @@ thre_stim_asso_mua = rate2mua(thre_stim_asso_hz) #
 if loop_num%2 == 0: save_img = 1
 else: save_img = 0
 
-if loop_num%10 ==0: get_ani = 0
-else: get_ani = 0
+# if loop_num%10 ==0: get_ani = 0
+# else: get_ani = 0
 
 save_analy_file = True
 #%%
@@ -392,100 +396,100 @@ if save_analy_file:
     data_anly.save(data_anly.class2dict(), datapath+savefile_name+'%d.file'%loop_num)
 
 #%%
-if get_ani:
-    #%
-    '''spon'''
-    #first_stim = 0 #1*n_perStimAmp -1; 
-    #last_stim = 0 #1*n_perStimAmp
-    start_time = 5000 #data.a1.param.stim1.stim_on[first_stim,0] - 300
-    end_time = start_time + 1000        #data.a1.param.stim1.stim_on[last_stim,1] + 300
+# if get_ani:
+    # #%
+    # '''spon'''
+    # #first_stim = 0 #1*n_perStimAmp -1; 
+    # #last_stim = 0 #1*n_perStimAmp
+    # start_time = 5000 #data.a1.param.stim1.stim_on[first_stim,0] - 300
+    # end_time = start_time + 1000        #data.a1.param.stim1.stim_on[last_stim,1] + 300
     
-    data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
-    data.a1.ge.get_centre_mass()
-    data.a1.ge.overlap_centreandspike()
+    # data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
+    # data.a1.ge.get_centre_mass()
+    # data.a1.ge.overlap_centreandspike()
     
-    data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
-    data.a2.ge.get_centre_mass()
-    data.a2.ge.overlap_centreandspike()
+    # data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
+    # data.a2.ge.get_centre_mass()
+    # data.a2.ge.overlap_centreandspike()
     
-    frames = data.a1.ge.spk_rate.spk_rate.shape[2]
+    # frames = data.a1.ge.spk_rate.spk_rate.shape[2]
     
     
-    stim = None 
-    adpt = None
-    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
-                                            frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
-    savetitle = title.replace('\n','')
+    # stim = None 
+    # adpt = None
+    # ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+    #                                         frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
+    # savetitle = title.replace('\n','')
     
-    moviefile = savetitle+'_spon_%d'%loop_num+'.mp4'
-    #%
-    ani.save(save_fig_dir + moviefile)
+    # moviefile = savetitle+'_spon_%d'%loop_num+'.mp4'
+    # #%
+    # ani.save(save_fig_dir + moviefile)
     
-    del ani
-    #%%
-    '''no att'''
-    first_stim = 0 #1*n_perStimAmp -1; 
-    last_stim = 0 #1*n_perStimAmp
-    start_time = data.a1.param.stim1.stim_on[first_stim,0] - 300
-    end_time = start_time + 1000        #data.a1.param.stim1.stim_on[last_stim,1] + 300
+    # del ani
+    # #%%
+    # '''no att'''
+    # first_stim = 0 #1*n_perStimAmp -1; 
+    # last_stim = 0 #1*n_perStimAmp
+    # start_time = data.a1.param.stim1.stim_on[first_stim,0] - 300
+    # end_time = start_time + 1000        #data.a1.param.stim1.stim_on[last_stim,1] + 300
     
-    data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
-    data.a1.ge.get_centre_mass()
-    data.a1.ge.overlap_centreandspike()
+    # data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
+    # data.a1.ge.get_centre_mass()
+    # data.a1.ge.overlap_centreandspike()
     
-    data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
-    data.a2.ge.get_centre_mass()
-    data.a2.ge.overlap_centreandspike()
+    # data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
+    # data.a2.ge.get_centre_mass()
+    # data.a2.ge.overlap_centreandspike()
     
-    frames = data.a1.ge.spk_rate.spk_rate.shape[2]
+    # frames = data.a1.ge.spk_rate.spk_rate.shape[2]
     
-    stim_on_off = data.a1.param.stim1.stim_on-start_time
-    stim_on_off = stim_on_off[stim_on_off[:,0]>=0][:int(last_stim-first_stim)+1]
+    # stim_on_off = data.a1.param.stim1.stim_on-start_time
+    # stim_on_off = stim_on_off[stim_on_off[:,0]>=0][:int(last_stim-first_stim)+1]
     
-    stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
+    # stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
     
-    adpt = None
-    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
-                                            frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
-    savetitle = title.replace('\n','')
+    # adpt = None
+    # ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+    #                                         frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
+    # savetitle = title.replace('\n','')
     
-    moviefile = savetitle+'_noatt_%d'%loop_num+'.mp4'
+    # moviefile = savetitle+'_noatt_%d'%loop_num+'.mp4'
     
-    ani.save(save_fig_dir + moviefile)
-    #%%
-    del ani
-    #%%
-    '''att'''
-    first_stim = n_StimAmp*n_perStimAmp #1*n_perStimAmp -1 + n_perStimAmp*n_StimAmp; 
-    last_stim = n_StimAmp*n_perStimAmp #1*n_perStimAmp + n_perStimAmp*n_StimAmp
-    start_time = data.a1.param.stim1.stim_on[first_stim,0] - 300
-    end_time = start_time + 1000        #data.a1.param.stim1.stim_on[last_stim,1] + 300
+    # ani.save(save_fig_dir + moviefile)
+    # #%%
+    # del ani
+    # #%%
+    # '''att'''
+    # first_stim = n_StimAmp*n_perStimAmp #1*n_perStimAmp -1 + n_perStimAmp*n_StimAmp; 
+    # last_stim = n_StimAmp*n_perStimAmp #1*n_perStimAmp + n_perStimAmp*n_StimAmp
+    # start_time = data.a1.param.stim1.stim_on[first_stim,0] - 300
+    # end_time = start_time + 1000        #data.a1.param.stim1.stim_on[last_stim,1] + 300
     
-    data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
-    data.a1.ge.get_centre_mass()
-    data.a1.ge.overlap_centreandspike()
+    # data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
+    # data.a1.ge.get_centre_mass()
+    # data.a1.ge.overlap_centreandspike()
     
-    data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
-    data.a2.ge.get_centre_mass()
-    data.a2.ge.overlap_centreandspike()
+    # data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
+    # data.a2.ge.get_centre_mass()
+    # data.a2.ge.overlap_centreandspike()
     
-    frames = data.a1.ge.spk_rate.spk_rate.shape[2]
+    # frames = data.a1.ge.spk_rate.spk_rate.shape[2]
     
-    stim_on_off = data.a1.param.stim1.stim_on-start_time
-    stim_on_off = stim_on_off[stim_on_off[:,0]>=0][:int(last_stim-first_stim)+1]
+    # stim_on_off = data.a1.param.stim1.stim_on-start_time
+    # stim_on_off = stim_on_off[stim_on_off[:,0]>=0][:int(last_stim-first_stim)+1]
     
-    stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
+    # stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
 
-    adpt = [None, [[[31.5,31.5]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[7]]]]
-    #adpt = None
-    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
-                                            frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
-    savetitle = title.replace('\n','')
+    # adpt = [None, [[[31.5,31.5]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[7]]]]
+    # #adpt = None
+    # ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+    #                                         frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
+    # savetitle = title.replace('\n','')
     
-    moviefile = savetitle+'_att_%d'%loop_num+'.mp4'
-    #%%
-    ani.save(save_fig_dir + moviefile)
-    del ani
+    # moviefile = savetitle+'_att_%d'%loop_num+'.mp4'
+    # #%%
+    # ani.save(save_fig_dir + moviefile)
+    # del ani
     
 #%%
 

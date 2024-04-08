@@ -8,6 +8,8 @@ Created on Tue Oct 10 10:22:51 2023
 
 '''
 Simulations for 2-input condition with/without cue
+
+To run simulations for 1-input condition, set stim2 = False at line 97.
 '''
 
 
@@ -47,11 +49,13 @@ if not os.path.exists(data_dir):
 #%%    **
 sys_argv = int(sys.argv[1])
 #%%
+get_movie = True # if true, make and save movie
+#%%
 record_LFP = True # if true, record LFP signal
 #%%
 loop_num = -1
 
-repeat = 2 # the number of random realizations of the network;
+repeat = 30 # the number of random realizations of the network;
 for rp in [None]*repeat:
     loop_num += 1
     if loop_num == sys_argv: 
@@ -275,7 +279,7 @@ syn_e1e2, syn_e1i2, syn_e2e1, syn_e2i1 = twoarea_net.build(ijwd1, ijwd2, ijwd_in
 if record_LFP:
     import get_LFP
     
-    LFP_elec = np.array([[0,0],[-32,-32]])
+    LFP_elec = np.array([[0,0],[-32,-32]]) # positions for LFP recordings
     i_LFP, j_LFP, w_LFP = get_LFP.get_LFP(ijwd2.e_lattice, LFP_elec, width = ijwd2.width, LFP_sigma = 7, LFP_effect_range = 2.5)
     
     group_LFP_record_1 = NeuronGroup(len(LFP_elec), model = get_LFP.LFP_recordneuron)
@@ -315,14 +319,14 @@ elif adapt_change_shape == 'logi':
 '''uncued'''
 stim_scale_cls = get_stim_scale.get_stim_scale()
 stim_scale_cls.seed = 10
-n_perStimAmp = 50 # number of trials for each stimulus strength
+n_perStimAmp = 20 # number of trials for each stimulus strength
 if not isinstance(stim_amp, np.ndarray):
     stim_amp = np.array([stim_amp])
 n_StimAmp = stim_amp.shape[0] # number of different stimulus strength
 
 stim_amp_scale = np.ones(n_StimAmp*n_perStimAmp)
 for i in range(n_StimAmp):
-    stim_amp_scale[i*n_perStimAmp:i*n_perStimAmp+n_perStimAmp] = stim_amp[i]/200
+    stim_amp_scale[i*n_perStimAmp:i*n_perStimAmp+n_perStimAmp] = stim_amp[i]/200 # 200 Hz is the default rate
 
 stim_scale_cls.stim_amp_scale = stim_amp_scale
 stim_scale_cls.stim_dura = stim_dura
@@ -333,7 +337,7 @@ stim_scale_cls.n_perStimAmp = n_perStimAmp
 stim_scale_cls.stim_amp = stim_amp
 
 
-transient = 10000 # ms; transient period
+transient = 10000 # ms; onset time of the first trial
 init = np.zeros(transient//stim_scale_cls.dt_stim)
 stim_scale_cls.scale_stim = np.concatenate((init, stim_scale_cls.scale_stim))
 stim_scale_cls.stim_on += transient
@@ -341,7 +345,7 @@ stim_scale_cls.stim_on += transient
 stim_scale_cls_att = get_stim_scale.get_stim_scale()
 stim_scale_cls_att.seed = 15
 n_StimAmp = stim_amp.shape[0]
-n_perStimAmp = 50
+n_perStimAmp = 20
 stim_amp_scale = np.ones(n_StimAmp*n_perStimAmp)
 for i in range(n_StimAmp):
     stim_amp_scale[i*n_perStimAmp:i*n_perStimAmp+n_perStimAmp] = stim_amp[i]/200
@@ -351,7 +355,7 @@ stim_scale_cls_att.stim_dura = stim_dura
 stim_scale_cls_att.separate_dura = np.array([800,1500])
 stim_scale_cls_att.get_scale()
 
-inter_time = 4000 # ms; time interval between uncued trial block an cued trial block
+inter_time = 4000 # ms; time interval between uncued trial block and cued trial block
 suplmt = (inter_time // stim_scale_cls.dt_stim) - (stim_scale_cls.scale_stim.shape[0] - stim_scale_cls.stim_on[-1,1] // stim_scale_cls.dt_stim) # supply '0' between non-attention and attention stimuli amplitude
 
 stim_scale_cls.scale_stim = np.concatenate((stim_scale_cls.scale_stim, np.zeros(suplmt), stim_scale_cls_att.scale_stim))
@@ -389,7 +393,7 @@ syn_extnl_e1 = Synapses(posi_stim_e1, group_e_1, model=synapse_e_extnl, on_pre='
 syn_extnl_e1.connect('i==j')
 syn_extnl_e1.w = w_extnl_*nS
 
-
+#%%
 '''background Poisson Input; '''
 
 if pois_bckgrdExt:
@@ -595,119 +599,121 @@ with open(data_dir+'data%d.file'%loop_num, 'wb') as file:
 
 
 #%%
-import firing_rate_analysis as fra
-import matplotlib.pyplot as plt
 
-'''load data'''
-data = mydata.mydata()
-data.load(data_dir+'data%d.file'%loop_num)
-
-''' produce animation '''
-
-#%
-chg_adapt_range = data.param.chg_adapt_range
-'''spontaneous'''
-
-first_stim = 0; last_stim = 0
-start_time = data.a1.param.stim1.stim_on[first_stim,0] - 1000
-end_time = data.a1.param.stim1.stim_on[last_stim,0] 
-
-data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
-data.a1.ge.get_centre_mass()
-data.a1.ge.overlap_centreandspike()
-
-data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
-data.a2.ge.get_centre_mass()
-data.a2.ge.overlap_centreandspike()
-
-#data.a1.gi.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ni, window = 10)
-#frames = int(end_time - start_time)
-frames = data.a1.ge.spk_rate.spk_rate.shape[2]
-
-ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
-                                        frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=None, adpt=None)
-
-ani.save('spontaneous_%d.mp4'%loop_num)
-del ani
-
+if get_movie:
+    import firing_rate_analysis as fra
+    import matplotlib.pyplot as plt
     
-#%%
-'''2 inputs; uncued'''
-
-stim_ani = 0
-first_stim = stim_ani*n_perStimAmp; 
-last_stim = stim_ani*n_perStimAmp 
-
-start_time = data.a1.param.stim1.stim_on[first_stim,0] - 300
-end_time = data.a1.param.stim1.stim_on[last_stim,1] + 500
-
-data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
-data.a1.ge.get_centre_mass()
-data.a1.ge.overlap_centreandspike()
-
-data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
-data.a2.ge.get_centre_mass()
-data.a2.ge.overlap_centreandspike()
-
-#data.a1.gi.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ni, window = 10)
-#frames = int(end_time - start_time)
-frames = data.a1.ge.spk_rate.spk_rate.shape[2]
-
-stim_on_off = data.a1.param.stim1.stim_on-start_time
-stim_on_off = stim_on_off[stim_on_off[:,0]>=0][:int(last_stim-first_stim)+1]
-
-#stim = [[[[31.5,31.5]], [stim_on_off], [[6]*stim_on_off.shape[0]]],None]
-stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
-#stim = [[[[31.5,31.5],[31.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
-
-adpt = None
-#adpt = [None, [[[31,31]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[6]]]]
-#adpt = [[[[31,31]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[6]]]]
-ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
-                                        frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
-
-ani.save('twoInputs_uncued_%d.mp4'%loop_num)
-del ani
-
-#%%
-'''2 inputs; cued'''
-stim_ani = 0
-first_stim = (n_StimAmp + stim_ani)*n_perStimAmp 
-last_stim = (n_StimAmp + stim_ani)*n_perStimAmp 
-start_time = data.a1.param.stim1.stim_on[first_stim,0] - 300
-end_time = data.a1.param.stim1.stim_on[last_stim,1] + 500
-
-data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
-data.a1.ge.get_centre_mass()
-data.a1.ge.overlap_centreandspike()
-
-data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
-data.a2.ge.get_centre_mass()
-data.a2.ge.overlap_centreandspike()
-
-#data.a1.gi.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ni, window = 10)
-#frames = int(end_time - start_time)
-frames = data.a1.ge.spk_rate.spk_rate.shape[2]
-
-stim_on_off = data.a1.param.stim1.stim_on-start_time
-stim_on_off = stim_on_off[stim_on_off[:,0]>=0][:int(last_stim-first_stim)+1]
-
-#stim = [[[[31.5,31.5],[-0.5,63.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]]]
-#stim = [[[[31.5,31.5]], [stim_on_off], [[6]*stim_on_off.shape[0]]],None]
-stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
-#stim = [[[[31.5,31.5],[31.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
-
-if hasattr(data.param, 'chg_adapt_range'):
+    '''load data'''
+    data = mydata.mydata()
+    data.load(data_dir+'data%d.file'%loop_num)
+    
+    ''' make movie '''
+    
+    #%
     chg_adapt_range = data.param.chg_adapt_range
-else:
-    chg_adapt_range = 7
+    '''spontaneous'''
     
-adpt = [None, [[[31.5,31.5]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[chg_adapt_range]]]]
-#adpt = None
-ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
-                                        frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
-
-ani.save('twoInputs_cued_%d.mp4'%loop_num)
-del ani
+    first_stim = 0; last_stim = 0
+    start_time = data.a1.param.stim1.stim_on[first_stim,0] - 1000
+    end_time = data.a1.param.stim1.stim_on[last_stim,0] 
+    
+    data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
+    data.a1.ge.get_centre_mass()
+    data.a1.ge.overlap_centreandspike()
+    
+    data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
+    data.a2.ge.get_centre_mass()
+    data.a2.ge.overlap_centreandspike()
+    
+    #data.a1.gi.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ni, window = 10)
+    #frames = int(end_time - start_time)
+    frames = data.a1.ge.spk_rate.spk_rate.shape[2]
+    
+    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+                                            frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=None, adpt=None)
+    
+    ani.save('spontaneous_%d.mp4'%loop_num)
+    del ani
+    
+        
+    #%%
+    '''2 inputs; uncued'''
+    
+    stim_ani = 0
+    first_stim = stim_ani*n_perStimAmp; 
+    last_stim = stim_ani*n_perStimAmp 
+    
+    start_time = data.a1.param.stim1.stim_on[first_stim,0] - 300
+    end_time = data.a1.param.stim1.stim_on[last_stim,1] + 500
+    
+    data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
+    data.a1.ge.get_centre_mass()
+    data.a1.ge.overlap_centreandspike()
+    
+    data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
+    data.a2.ge.get_centre_mass()
+    data.a2.ge.overlap_centreandspike()
+    
+    #data.a1.gi.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ni, window = 10)
+    #frames = int(end_time - start_time)
+    frames = data.a1.ge.spk_rate.spk_rate.shape[2]
+    
+    stim_on_off = data.a1.param.stim1.stim_on-start_time
+    stim_on_off = stim_on_off[stim_on_off[:,0]>=0][:int(last_stim-first_stim)+1]
+    
+    #stim = [[[[31.5,31.5]], [stim_on_off], [[6]*stim_on_off.shape[0]]],None]
+    stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
+    #stim = [[[[31.5,31.5],[31.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
+    
+    adpt = None
+    #adpt = [None, [[[31,31]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[6]]]]
+    #adpt = [[[[31,31]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[6]]]]
+    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+                                            frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
+    
+    ani.save('twoInputs_uncued_%d.mp4'%loop_num)
+    del ani
+    
+    #%%
+    '''2 inputs; cued'''
+    stim_ani = 0
+    first_stim = (n_StimAmp + stim_ani)*n_perStimAmp 
+    last_stim = (n_StimAmp + stim_ani)*n_perStimAmp 
+    start_time = data.a1.param.stim1.stim_on[first_stim,0] - 300
+    end_time = data.a1.param.stim1.stim_on[last_stim,1] + 500
+    
+    data.a1.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a1.param.Ne, window = 15)
+    data.a1.ge.get_centre_mass()
+    data.a1.ge.overlap_centreandspike()
+    
+    data.a2.ge.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ne, window = 15)
+    data.a2.ge.get_centre_mass()
+    data.a2.ge.overlap_centreandspike()
+    
+    #data.a1.gi.get_spike_rate(start_time=start_time, end_time=end_time, sample_interval=1, n_neuron = data.a2.param.Ni, window = 10)
+    #frames = int(end_time - start_time)
+    frames = data.a1.ge.spk_rate.spk_rate.shape[2]
+    
+    stim_on_off = data.a1.param.stim1.stim_on-start_time
+    stim_on_off = stim_on_off[stim_on_off[:,0]>=0][:int(last_stim-first_stim)+1]
+    
+    #stim = [[[[31.5,31.5],[-0.5,63.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]]]
+    #stim = [[[[31.5,31.5]], [stim_on_off], [[6]*stim_on_off.shape[0]]],None]
+    stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
+    #stim = [[[[31.5,31.5],[31.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
+    
+    if hasattr(data.param, 'chg_adapt_range'):
+        chg_adapt_range = data.param.chg_adapt_range
+    else:
+        chg_adapt_range = 7
+        
+    adpt = [None, [[[31.5,31.5]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[chg_adapt_range]]]]
+    #adpt = None
+    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+                                            frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
+    
+    ani.save('twoInputs_cued_%d.mp4'%loop_num)
+    del ani
 
     
