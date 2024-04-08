@@ -603,6 +603,7 @@ if get_movie:
     import firing_rate_analysis as fra
     import matplotlib.pyplot as plt
     
+    title = ''    
     '''load data'''
     data = mydata.mydata()
     data.load(data_dir+'data%d.file'%loop_num)

@@ -92,6 +92,8 @@ mua_neuron = cn.findnearbyneuron.findnearbyneuron(data.a1.param.e_lattice, mua_l
 start_t = np.arange(5000, 9001, 1000)
 end_t = start_t + 1000
 analy_dura = np.array([start_t, end_t]).T
+data_anly.a1 = mydata.mydata()
+data_anly.a2 = mydata.mydata()
 
 for area in ['a1', 'a2']:
     coef = []
@@ -110,15 +112,15 @@ for area in ['a1', 'a2']:
 fig, ax = plt.subplots(1,2, figsize=[8,5])
 
 freq_plt = (data_anly.a1.spon_freq > 0) & (data_anly.a1.spon_freq < 100)
-ax[0].loglog(data_anly.a1.spon_freq[freq_plt], data_anly.a1.spon_coef.mean(0), label='area 1')
-ax[1].loglog(data_anly.a2.spon_freq[freq_plt], data_anly.a2.spon_coef.mean(0), label='area 2')
+ax[0].loglog(data_anly.a1.spon_freq[freq_plt], data_anly.a1.spon_coef.mean(0)[freq_plt], label='area 1')
+ax[1].loglog(data_anly.a2.spon_freq[freq_plt], data_anly.a2.spon_coef.mean(0)[freq_plt], label='area 2')
 
 ax[0].set_xlabel('Frequency (Hz)')
 ax[1].set_xlabel('Frequency (Hz)')
 ax[0].set_ylabel('Power spectrum (a.u.)')
 ax[1].set_ylabel('Power spectrum (a.u.)')
-
-plt.legend()
+ax[0].legend()
+ax[1].legend()
 
 fig.savefig('spectrum_spon_%.d.png'%loop_num)
 plt.close()
@@ -318,7 +320,8 @@ for win in win_lst:
     if get_coefDiffDist:
         data_anly.nscorr_t.nscorr_diff.append(ns_diff)
     
-    fig, ax = plt.subplots(3,1, figsize=[8,8])
+    fig, ax = plt.subplots(1,1, figsize=[8,5])
+    ax = [ax]
     sample_t = np.arange(ns_t.shape[2])*nscorr.move_step-nscorr.t_bf
     for st in range(n_StimAmp):  
         ax[0].errorbar(sample_t, ns_t[0, 0, :, st],ns_t[0, 1, :, st], c=clr[st], fmt='--', marker='o', label='uncued;amp:%.1fHz'%stim_amp[st])
@@ -327,6 +330,8 @@ for win in win_lst:
     #ax.legend()
     ax[0].legend()
     ax[0].set_xlim([sample_t.min()-20,sample_t.max()+150])
+    ax[0].set_xlabel('Time (ms)')
+    ax[0].set_ylabel('Noise correlation')
 
     fig.suptitle(title + ' win:%.1f'%win)
     nsfile = 'NoisCorr_win%.1f'%win+save_apd+'_%d'%(loop_num)+'.png'

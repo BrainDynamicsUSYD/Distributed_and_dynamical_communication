@@ -8,4 +8,6 @@ var/
 raw_data/
 fig_movi
 onearea.o*
-
+twoareas.o*
+*.png
+*.mp4
