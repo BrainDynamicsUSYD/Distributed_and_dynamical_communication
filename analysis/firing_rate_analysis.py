@@ -2,7 +2,7 @@
 """
 Created on Sun Aug  9 22:18:39 2020
 
-@author: nishe
+@author: Shencong Ni
 """
 import numpy as np
 from scipy.sparse import csc_matrix

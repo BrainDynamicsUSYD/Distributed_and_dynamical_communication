@@ -26,6 +26,7 @@ import firing_rate_analysis as fra
 import frequency_analysis as fqa
 import fano_mean_match
 import connection as cn
+import pywt
 import sys
 import matplotlib.pyplot as plt
 #%%
@@ -125,6 +126,52 @@ ax[1].legend()
 fig.savefig('spectrum_spon_%.d.png'%loop_num)
 plt.close()
 
+#%%
+'''
+Wavelet spectrogram of spontaneous activity
+'''
+area = 'a1'
+start_time = 5500
+end_time = 6500
+t_ext = 500
+mua1 = fra.get_spkcount_sum_sparmat(data.__dict__[area].ge.spk_matrix[mua_neuron], start_time-t_ext, end_time+t_ext,
+                   sample_interval = 1,  window = 1, dt = 0.1)/mua_neuron.shape[0]/0.001
+area = 'a2'
+mua2 = fra.get_spkcount_sum_sparmat(data.__dict__[area].ge.spk_matrix[mua_neuron], start_time-t_ext, end_time+t_ext,
+                   sample_interval = 1,  window = 1, dt = 0.1)/mua_neuron.shape[0]/0.001
+
+cmor = pywt.ContinuousWavelet('cmor15-1')
+cmor.lower_bound = -8
+cmor.upper_bound = 8
+sampling_period = 0.001
+freq = np.arange(30, 81, 2)[::-1]
+scale = 1/sampling_period/freq
+
+coef1, freq = fqa.mycwt(mua1, cmor, sampling_period, scale = scale,  method = 'fft', L1_norm = True)
+coef1 = np.abs(coef1)
+coef2, freq = fqa.mycwt(mua2, cmor, sampling_period, scale = scale,  method = 'fft', L1_norm = True)
+coef2 = np.abs(coef2)
+
+
+fig, ax = plt.subplots(2,1, figsize=[8,6])
+
+im1 = ax[0].imshow(coef1[:,t_ext:-t_ext],aspect='auto',extent=[-0.5,1000+0.5, 29,81])#, vmax=1.1,vmin=0)#,origin='lower')
+im2 = ax[1].imshow(coef2[:,t_ext:-t_ext],aspect='auto',extent=[-0.5,1000+0.5, 29,81])#, vmax=1.1,vmin=0)#,origin='lower')
+
+ax[0].set_title('area 1')
+ax[1].set_title('area 2')
+
+cax = ax[0].inset_axes([1.01, 0, 0.013, 1], transform=ax[0].transAxes)
+fig.colorbar(im1, cax=cax, orientation='vertical')
+cax.text(-3.2,1.03,'Amp. (a.u.)', ha='left',fontsize=10, transform=cax.transAxes)
+
+cax = ax[1].inset_axes([1.01, 0, 0.013, 1], transform=ax[1].transAxes)
+fig.colorbar(im2, cax=cax, orientation='vertical')
+cax.text(-3.2,1.03,'Amp. (a.u.)', ha='left',fontsize=10, transform=cax.transAxes)
+
+
+fig.savefig('wavelet_spon_%.d.png'%loop_num)
+plt.close()
 #%%
 
 '''Fano factor'''

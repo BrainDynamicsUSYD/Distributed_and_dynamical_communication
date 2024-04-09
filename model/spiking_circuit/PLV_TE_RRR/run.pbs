@@ -1,0 +1,36 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -N twoareas
+##PBS -o ./PBSout
+##PBS -e ./PBSout
+#PBS -j oe
+#PBS -l select=1:ncpus=1:mem=4GB
+#PBS -l walltime=24:00:00
+##PBS -m e
+#PBS -V 
+#PBS -J 0-29
+
+#0-20
+
+#set -x
+cd "$PBS_O_WORKDIR"
+
+# Path to scripts
+script_path=/Path_to_/Distributed_and_dynamical_communication/model/spiking_circuit/two_inputs
+
+simulation_file=two_inputs_simu.py
+simulation_file2=onoff_detection.py
+simulation_file3=phaselockingvalue.py
+simulation_file4=transfer_entropy.py
+simulation_file5=extractDataforRRRforEachNet.py
+
+# run simulation
+python ${script_path}/${simulation_file} ${PBS_ARRAY_INDEX}
+python ${script_path}/${simulation_file2} ${PBS_ARRAY_INDEX}
+python ${script_path}/${simulation_file3} ${PBS_ARRAY_INDEX}
+python ${script_path}/${simulation_file4} ${PBS_ARRAY_INDEX}
+python ${script_path}/${simulation_file5} ${PBS_ARRAY_INDEX}
+
+
+echo "all done!"
+ 
