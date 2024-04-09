@@ -160,6 +160,9 @@ im2 = ax[1].imshow(coef2[:,t_ext:-t_ext],aspect='auto',extent=[-0.5,1000+0.5, 29
 
 ax[0].set_title('area 1')
 ax[1].set_title('area 2')
+ax[1].set_xlabel('Time (ms)')
+ax[0].set_ylabel('Frequency (Hz)')
+ax[1].set_ylabel('Frequency (Hz)')
 
 cax = ax[0].inset_axes([1.01, 0, 0.013, 1], transform=ax[0].transAxes)
 fig.colorbar(im1, cax=cax, orientation='vertical')

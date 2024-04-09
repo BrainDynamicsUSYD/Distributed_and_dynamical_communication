@@ -6,7 +6,7 @@ Run `two_inputs_simu.py` with one input argument, e.g.,
 python two_inputs_simu.py 0
 ```
 
-Here `0` is the input argument, which specify the index of the random network realization.
+Here `0` is the input argument, which specifies the index of the random network realization.
 By default, this index is the seed of random number generator.
 The default maximum value of this index can be changed by changing the 'repeat' variable in 'two_inputs_simu.py'.
 

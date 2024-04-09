@@ -148,7 +148,7 @@ def mycwt(signal, wavelet_name, sampling_period, scale = None,  method = 'fft', 
     scale: 1-D numpy array, sacle of each wavelet kernel 
     wavelet_name: the name of wavelet to be used, e.g. 'cmor1.5-1'
     sampling_period: (second) sampling_period of input signal
-    L1-norm: whether to normalise the output coefficient by using L1-norm. L1-norm is preferred since under the L1-norm, 
+    L1-norm: whether to use L1-norm. L1-norm is preferred because under the L1-norm, 
     if different frequency components in the input signal have the same magnititude, their corresponding output wavelet coefficients also
     have the same magnitude.
     output:

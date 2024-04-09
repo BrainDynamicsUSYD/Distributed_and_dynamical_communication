@@ -1,13 +1,24 @@
 # Distributed_and_dynamical_communication
-Code associated with manuscript "Distributed and dynamical communication: A mechanism for flexible cortico-cortical interactions and its functional roles in visual attention"
+Code associated with the paper "Distributed and dynamical communication: A mechanism for flexible cortico-cortical interactions and its functional roles in visual attention"
 
-Required packages:
-Numpy Brian2 Matplotlib Scipy Scikit-learn 
+## Structure
 
-Run 'twoInputs.py' with one command line argument. The argument is an non-negative integer number (e.g., 0) which defines the seed of random number generator. Each seed corresponds to one random network realization. The default maximum value of the argument is set to 1 (i.e., two random network realizations can be generated). This default maximum value can be changed by changing the 'repeat' variable in 'twoInputs.py'.
+`analysis` contains the functions and Python classes for data processing and analysis.
+`connection` contains the functions and Python classes for generating spiking circuit model.
+`model` contains the scripts for model simulation and data analysis.
+`model/spiking_circuit` contains the scripts for the spiking circuit model. See the `README.md` in corresponding folders for instructions.
+`model/mathematical_model` contains the scripts for the mathematical model.
 
-The output of 'twoInputs.py' are 4 files:
-1. 'data.file' (saved in ./raw_data), containing the LFP and spikes data.
-2. 'spontaneous.mp4'. The movie for spontaneous activity.
-3. 'twoInputs_uncued.mp4'. The movie for the two-input condition without cue.
-4. 'twoInputs_cued.mp4'. The movie for the two-input condition with one input being cued.
+## Required packages and software:
+Python 3.7,
+Brian 2 (2.5) (https://brian2.readthedocs.io/en/stable/)
+numpy
+cython
+scipy
+pywavelets (https://pywavelets.readthedocs.io/en/latest/index.html)
+scikit-learn
+pylevy (https://github.com/josemiotto/pylevy)  
+matplotlib
+Matlab 2019b, 
+MATLAB Engine API for Python (https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html)
+	
