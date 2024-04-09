@@ -10,6 +10,8 @@ Codes for the paper "Distributed and dynamical communication: A mechanism for fl
 `model/spiking_circuit` contains the scripts for the spiking circuit model. See the `README.md` in corresponding folders for instructions.  
 `model/mathematical_model` contains the scripts for the mathematical model.
 
+- The directories `Distributed_and_dynamical_communication`, `Distributed_and_dynamical_communication/analysis` and `Distributed_and_dynamical_communication/connection` should be added to the `PYTHONPATH` environment variable so that Python can find these modules.
+
 ## Required packages and software:
 
 Python 3.7  
