@@ -8,6 +8,8 @@ Created on Mon Apr  8 17:56:06 2024
 
 '''
 Simulations for 2-input condition with/without cue
+
+To run simulations for 1-input condition, set stim2 = False at line 97.
 '''
 
 
