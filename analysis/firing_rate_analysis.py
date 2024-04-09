@@ -292,7 +292,7 @@ def get_centre_mass(spk, dt, slide_interval, jump_interval, detect_pattern=False
     '''  
 #        slide_interval = round(slide_interval/dt)
 #        jump_interval = round(jump_interval/dt)
-    slide_interval = int(np.round(slide_interval/dt))
+    slide_interval_step = int(np.round(slide_interval/dt)); #print(slide_interval_step)
     len_hori = spk.shape[1]; len_vert = spk.shape[0];
     x_hori = np.cos((np.arange(len_hori)+0.5)/len_hori*2*np.pi).reshape([-1,1])
     y_hori = np.sin((np.arange(len_hori)+0.5)/len_hori*2*np.pi).reshape([-1,1])
@@ -302,7 +302,7 @@ def get_centre_mass(spk, dt, slide_interval, jump_interval, detect_pattern=False
     y_vert = np.sin((np.arange(len_vert)+0.5)/len_vert*2*np.pi).reshape([-1,1])
     xy_vert = np.concatenate((x_vert,y_vert),axis=1)
     
-    slide_ary = np.arange(0,spk.shape[2],slide_interval)
+    slide_ary = np.arange(0,spk.shape[2],slide_interval_step)
     centre_ind = np.zeros([len(slide_ary), 2], dtype=np.int16)
     #jump_size = np.zeros([len(slide_ary), 2])
     centre = np.zeros([len(slide_ary), 2], dtype=float)
@@ -364,7 +364,7 @@ def get_centre_mass(spk, dt, slide_interval, jump_interval, detect_pattern=False
                 pattern_size[ind] = size   
 
             
-    jump_size = centre[int(jump_interval/slide_interval):, :] - centre[:len(centre)-int(jump_interval/slide_interval), :]
+    jump_size = centre[round(jump_interval/slide_interval):, :] - centre[:len(centre)-round(jump_interval/slide_interval), :]
     jump_size = wrapToPi(jump_size)
     jump_size[:,0] = jump_size[:,0]*len_vert/(2*np.pi)
     jump_size[:,1] = jump_size[:,1]*len_hori/(2*np.pi)
@@ -398,6 +398,7 @@ def get_MSD(spike, start_time, end_time, \
 #    print(jump_interval)        
     spk_rate = get_spike_rate(spike, start_time, end_time, indiv_rate = True, popu_rate = False, \
                    sample_interval = sample_interval, n_neuron = n_neuron, window = window, dt = dt, reshape_indiv_rate = True, save_results_to_input = False)
+    
     '''
     ###############
     slide_interval = int(np.round(slide_interval/sample_interval))
@@ -439,7 +440,7 @@ def get_MSD(spike, start_time, end_time, \
     '''
 
     # slide_interval = int(np.round(slide_interval/dt))
-    slide_interval = int(np.round(slide_interval/sample_interval))
+    slide_interval_step = int(np.round(slide_interval/sample_interval))
 
     len_hori = spk_rate.shape[1]; len_vert = spk_rate.shape[0];
     x_hori = np.cos((np.arange(len_hori)+0.5)/len_hori*2*np.pi).reshape([-1,1])
@@ -450,7 +451,7 @@ def get_MSD(spike, start_time, end_time, \
     y_vert = np.sin((np.arange(len_vert)+0.5)/len_vert*2*np.pi).reshape([-1,1])
     xy_vert = np.concatenate((x_vert,y_vert),axis=1)
     
-    slide_ary = np.arange(0,spk_rate.shape[2],slide_interval)
+    slide_ary = np.arange(0,spk_rate.shape[2],slide_interval_step)
     # centre_ind = np.zeros([len(slide_ary), 2], dtype=np.int16)
     #jump_size = np.zeros([len(slide_ary), 2])
     centre = np.zeros([len(slide_ary), 2], dtype=float)
@@ -472,7 +473,7 @@ def get_MSD(spike, start_time, end_time, \
 
     MSD = np.zeros(jump_interval.shape)
     #print(MSD)        
-
+    print(slide_interval, slide_interval_step)
     for i in range(len(jump_interval)):
         
         jump_size = centre[round(jump_interval[i]/slide_interval):, :] - centre[:len(centre)-round(jump_interval[i]/slide_interval), :]
@@ -1836,6 +1837,281 @@ def detect_event(frame, ax_num, event, loca_n, all_done, current_trial, trial_st
                                 #print(ax_i,n,'all done')
                                 #print(ax_i,all_done[ax_i][n])
                             #print(ax_i,current_trial[ax_i][n],trial_state[ax_i][n],current_state[ax_i][n],all_done[ax_i][n])
+#%%
+#%%
+def show_pattern_ms(spkrate1, spkrate2=None, frames = 1000, start_time = 0, interval_movie=10, ax1title='', ax2title='', anititle='', show_pattern_size=False, pattern_ctr=None, pattern_size=None,\
+                 stim=None, adpt=None):
+    '''
+    create amination for the firing pattern of network
+    input:
+    spkrate1, spkrate2: (N*N*t array)
+    frames: number of frames of amination
+    start_time: the real-time in the simulation that the first frame of 'spkrate' cooresponds to
+    anititle: set the title of amination
+    
+    stim: location(coordinate is expressed in matrix convention, not in cartesian), onset and offset time, and size of stimuli; for indicating the position of stimulus
+    e.g. stim = [[[[31.5,31.5],[63.5,-0.5]], [stim_on_off,stim_on_off], [[6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]]],None]
+          [area1:[[[loca1],  [loca2]],  [on_off_1(2D array), on_off_2], [[size for each on_off_1], [size for each on_off_2]]], area2:None]
+    multiple stimuli are added at [31.5,31.5] and [63.5,-0.5]; on and off time of each stimulus appearred at [31.5,31.5] and [63.5,-0.5] are
+    specified in stim_on_off, stim_on_off; size(radius) of each stimulus: [6]*stim_on_off.shape[0],[6]*stim_on_off.shape[0]
+       
+    adpt: location, onset and offset time, and size of adaptation modulation; for indicating the position of adaptation modulation
+    e.g. adpt = [None, [[[31.5,31.5]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[chg_adapt_range]]]]
+
+    '''
+    if spkrate2 is None:
+        
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        fig = plt.figure(figsize = (6,6))
+        ax1= fig.add_subplot(111, label="1",frame_on=False)
+        ax1.axis('off')
+        divider = make_axes_locatable(ax1)
+        cbaxes = divider.append_axes("bottom", size="5%", pad=0.05)
+            
+        cmap_spk=plt.cm.get_cmap('Blues', 7) # viridis Blues
+        camp_adapt = np.array([138/255,43/255,226/255,1.])
+        cmap_c = np.array([1.,0.,0.,1.])
+        cmap_stimulus = np.array([88/255,150/255.,0.,1.])
+        cmap = np.vstack((camp_adapt,cmap_stimulus,cmap_c,cmap_spk(range(7))))
+        cmap = mpl.colors.ListedColormap(cmap)
+        #cmap.set_under('red')
+        bounds = np.array([-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]) - 0.5
+        norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+        #cbaxes = fig.add_axes([0.2, 0.1, 0.6, 0.03]) 
+        
+        cb = mpl.colorbar.ColorbarBase(cbaxes, cmap=cmap,
+                                        norm=norm,
+                                        boundaries=bounds,
+                                        ticks=np.array([-3, -2, -1, 0, 1, 2, 3, 4, 5, 6]),
+                                        spacing='proportional',
+                                        orientation='horizontal') #horizontal vertical
+        cb.ax.set_xticklabels(['adpt','stim','ctr', 0, 1, 2, 3, 4, 5, 6])
+        cb.set_label('number of spikes')
+        
+        #titleaxes = fig.add_axes([0.3, 0.75, 0.4, 0.05])
+        titleaxes = divider.append_axes("top", size="5%", pad=0.2)
+        titleaxes.axis('off')
+        title = titleaxes.text(0.5,0.05, "", bbox={'facecolor':'w', 'alpha':0.5, 'pad':5},transform=titleaxes.transAxes, ha="center")
+        time_title = np.arange(spkrate1.shape[2]) + start_time
+        
+        value1=ax1.matshow(spkrate1[:,:,0], cmap=cb.cmap, norm=cb.norm)
+
+        if show_pattern_size:
+            circle_pattern = plt.Circle([pattern_ctr[0,1],pattern_ctr[0,0]],pattern_size[0], lw=1.,color='r',fill=False)
+            ax1.add_patch(circle_pattern)
+        # def init():
+        #     value1=ax1.matshow(spkrate1[:,:,0], cmap=cb.cmap, norm=cb.norm)
+        #     title.set_text(u"time: {} ms".format(time_title[0]))
+        #     # if show_pattern_size:
+        #     #     circle_pattern = plt.Circle([pattern_ctr[0,1],pattern_ctr[0,0]],pattern_size[0], lw=1.5,color='r',fill=False)
+        #     #     ax2.add_patch(circle_pattern)
+        #     #     return value1,title,circle_pattern
+        #     return value1,title,
+        # stim = [[np.array([[31,31],[-0.5,-0.5]]), [np.array([[0,200],[300,400]]), np.array([0,200])], [[6,6],[6]]]]
+        # #adpt = [[np.array([[31,31],[-0.5,-0.5]]), [np.array([[100,200],[400,500]]), np.array([100,200])], [[6.1,6.1],[6.1]]]]
+        # adpt = None
+        #ax_init_loc_stim = [None]*2
+        if stim is not None:
+            if len(stim) != 1: stim = [stim]
+            loca_n_stim, max_trial_stim, current_state_stim, current_trial_stim, trial_state_stim, all_done_stim, circle_stim = \
+                [None], [None], [None], [None], [None], [None], [None] 
+            for ax_i in range(1):
+                #*ax_init_loc_stim[ax_i], ax[ax_i] = init_loca(ax[ax_i], stim[ax_i], 'g')
+                loca_n_stim[ax_i], max_trial_stim[ax_i], current_state_stim[ax_i], current_trial_stim[ax_i], \
+                trial_state_stim[ax_i], all_done_stim[ax_i], circle_stim[ax_i], ax1 = init_loca(ax1, stim[ax_i], 'g')
+            circle_all = []
+            for cir in circle_stim:
+                if cir is not None:
+                    circle_all += cir
+        if adpt is not None:
+            if len(adpt) != 1: adpt = [adpt]
+            loca_n_adpt, max_trial_adpt, current_state_adpt, current_trial_adpt, trial_state_adpt, all_done_adpt, circle_adpt = \
+                [None], [None], [None], [None], [None], [None], [None] 
+            for ax_i in range(1):
+                #*ax_init_loc_adpt[ax_i], ax[ax_i] = init_loca(ax[ax_i], stim[ax_i], 'g')
+                loca_n_adpt[ax_i], max_trial_adpt[ax_i], current_state_adpt[ax_i], current_trial_adpt[ax_i], \
+                trial_state_adpt[ax_i], all_done_adpt[ax_i], circle_adpt[ax_i], ax1 = init_loca(ax1, adpt[ax_i], 'C1', lw=1.5, fill=False, alpha=1)
+            if 'circle_all' not in locals():
+                circle_all = []
+            for cir in circle_adpt:
+                if cir is not None:
+                    circle_all += cir        
+        def updatev(i):
+            value1.set_array(spkrate1[:,:,i])
+            #value2.set_array(spk2[:,:,i])
+            title.set_text(u"time: {} ms".format(time_title[i]))
+            # if show_pattern_size:
+            #     circle_pattern.set_center([pattern_ctr[i,1],pattern_ctr[i,0]])
+            #     circle_pattern.set_radius(pattern_size[i])
+            #     print('size')
+            #     return value1, title,circle_pattern#, value2
+            if show_pattern_size:
+                circle_pattern.center = [pattern_ctr[i,1],pattern_ctr[i,0]]
+                circle_pattern.radius = pattern_size[i]
+                if stim is not None:
+                    detect_event(i, 1, stim, loca_n_stim, all_done_stim, current_trial_stim, \
+                             trial_state_stim, current_state_stim, circle_stim, max_trial_stim)                
+                    # for ax_i in range(1):
+                    #     if stim[ax_i] is not None:
+                    #         #loca_n, max_trial, current_state, current_trial, trial_state, all_done, stim_circle = ax_init_loc_stim[ax_i]
+                    #         for n in range(loca_n_stim[ax_i]):
+                    #             if not all_done_stim[ax_i][n]:
+                    #                 if i == stim[ax_i][1][n][current_trial_stim[ax_i][n],trial_state_stim[ax_i][n]]:
+                    #                     if current_state_stim[ax_i][n] == False:
+                    #                         #stim_circle[n].center = [pattern_ctr[i,1],pattern_ctr[i,0]]
+                    #                         circle_stim[ax_i][n].radius = stim[ax_i][2][n][current_trial_stim[ax_i][n]]#pattern_size[i]
+                    #                         trial_state_stim[ax_i][n] += 1
+                    #                         current_state_stim[ax_i][n] = True
+                    #                         print(ax_i,current_trial_stim[ax_i][n],trial_state_stim[ax_i][n],current_state_stim[ax_i][n],all_done_stim[ax_i][n])
+                    #                     else:
+                    #                         circle_stim[ax_i][n].radius = 0
+                    #                         trial_state_stim[ax_i][n] -= 1
+                    #                         current_trial_stim[ax_i][n] += 1
+                    #                         current_state_stim[ax_i][n] = False
+                    #                         if max_trial_stim[ax_i][n] == current_trial_stim[ax_i][n]:
+                    #                             all_done_stim[ax_i][n] = True
+                    #                             print(ax_i,n,'all done')
+                    #                             print(ax_i,all_done_stim[ax_i][n])
+                    #                         print(ax_i,current_trial_stim[ax_i][n],trial_state_stim[ax_i][n],current_state_stim[ax_i][n],all_done_stim[ax_i][n])
+                    #                         #sleep(1)
+                if adpt is not None:
+                    detect_event(i, 1, adpt, loca_n_adpt, all_done_adpt, current_trial_adpt, \
+                                 trial_state_adpt, current_state_adpt, circle_adpt, max_trial_adpt)                
+                    # for ax_i in range(1):
+                    #     if adpt[ax_i] is not None:
+                    #         #loca_n, max_trial, current_state, current_trial, trial_state, all_done, stim_circle = ax_init_loc_stim[ax_i]
+                    #         for n in range(loca_n_adpt[ax_i]):
+                    #             if not all_done_adpt[ax_i][n]:
+                    #                 if i == adpt[ax_i][1][n][current_trial_adpt[ax_i][n],trial_state_adpt[ax_i][n]]:
+                    #                     if current_state_adpt[ax_i][n] == False:
+                    #                         #stim_circle[n].center = [pattern_ctr[i,1],pattern_ctr[i,0]]
+                    #                         circle_adpt[ax_i][n].radius = adpt[ax_i][2][n][current_trial_adpt[ax_i][n]]#pattern_size[i]
+                    #                         trial_state_adpt[ax_i][n] += 1
+                    #                         current_state_adpt[ax_i][n] = True
+                    #                         print(ax_i,current_trial_adpt[ax_i][n],trial_state_adpt[ax_i][n],current_state_adpt[ax_i][n],all_done_adpt[ax_i][n])
+                    #                     else:
+                    #                         circle_adpt[ax_i][n].radius = 0
+                    #                         trial_state_adpt[ax_i][n] -= 1
+                    #                         current_trial_adpt[ax_i][n] += 1
+                    #                         current_state_adpt[ax_i][n] = False
+                    #                         if max_trial_adpt[ax_i][n] == current_trial_adpt[ax_i][n]:
+                    #                             all_done_adpt[ax_i][n] = True
+                    #                             print(ax_i,n,'all done')
+                    #                             print(ax_i,all_done_adpt[ax_i][n])
+                    #                         print(ax_i,current_trial_adpt[ax_i][n],trial_state_adpt[ax_i][n],current_state_adpt[ax_i][n],all_done_adpt[ax_i][n])
+                if stim is not None or adpt is not None:
+                    return (value1, *circle_all, circle_pattern, title) #, circle_adpt[ax_i][1]
+                else: return value1, title, circle_pattern,
+                
+            else:
+                if stim is not None:
+                    detect_event(i, 1, stim, loca_n_stim, all_done_stim, current_trial_stim, \
+                             trial_state_stim, current_state_stim, circle_stim, max_trial_stim)                
+                if adpt is not None:                    
+                    detect_event(i, 1, adpt, loca_n_adpt, all_done_adpt, current_trial_adpt, \
+                                 trial_state_adpt, current_state_adpt, circle_adpt, max_trial_adpt)                
+                if stim is not None or adpt is not None:
+                    return (value1, *circle_all, title)
+                else:
+                    return value1, title,
+        
+        #value1.set_clim(vmin=0, vmax=6)
+        # ax1.axis('off')
+        #if stimu_onset >= 0: fig.suptitle('onset of stimulus:%dms'%(stimu_onset))
+        fig.suptitle(anititle)
+        ani=animation.FuncAnimation(fig, updatev,  frames=frames, interval=interval_movie, blit=True)    # frames=spk1.shape[2]
+        return ani
+    else:
+        fig, ax = plt.subplots(1,2)
+        #fig.suptitle('sensory to association strength: %.2f\nassociation to sensory strength: %.2f'
+        #             %(scale_e_12[i],scale_e_21[j]))
+        #ax1.set_title('sensory')
+        #ax2.set_title('association')
+        cmap_spk=plt.cm.get_cmap('Greys', 3) # viridis Blues
+        camp_adapt = np.array([255/255,127/255,14/255,1.])
+        cmap_c = np.array([1.,0.,0.,1.])
+        cmap_stimulus = np.array([88/255,150/255.,0.,1.])
+        cmap = np.vstack((camp_adapt,cmap_stimulus,cmap_c,cmap_spk(range(3))))
+        cmap = mpl.colors.ListedColormap(cmap)
+        #cmap.set_under('grey')
+        bounds = np.array([-3, -2, -1, 0, 1, 2, 3 ]) - 0.5
+        
+        norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+        cbaxes = fig.add_axes([0.2, 0.15, 0.6, 0.03]) 
+        
+        cb = mpl.colorbar.ColorbarBase(cbaxes, cmap=cmap,
+                                        norm=norm,
+                                        boundaries=bounds,
+                                        ticks=np.array([-3, -2, -1, 0, 1, 2, ]),#+0.5,
+                                        spacing='proportional',
+                                        orientation='horizontal') #horizontal vertical
+        cb.ax.set_xticklabels(['Cue','Input','CoM', 0, 1, 2, ])
+        cb.set_label('                                                                   Number of spikes')
+        
+        titleaxes = fig.add_axes([0.3, 0.85, 0.4, 0.05])
+        titleaxes.axis('off')
+        title = titleaxes.text(0.5,0.05, "", fontsize=10, bbox={'facecolor':'w', 'alpha':0.5, 'pad':5},transform=titleaxes.transAxes, ha="center")
+        time_title = np.arange(spkrate1.shape[2]) + start_time
+        
+        value1=ax[0].matshow(spkrate1[:,:,0], cmap=cb.cmap, norm=cb.norm)
+        value2=ax[1].matshow(spkrate2[:,:,0], cmap=cb.cmap, norm=cb.norm)
+        
+
+        # stim = [[np.array([[31,31],[-0.5,-0.5]]), [np.array([[0,200],[300,400]]), np.array([0,200])], [[6,6],[6]]],\
+        #         [np.array([[31,31],[-0.5,-0.5]]), [np.array([[0,200],[300,400]]), np.array([0,200])], [[6,6],[6]]]]
+        # stim = [[np.array([[31,31],[-0.5,-0.5]]), [np.array([[0,200],[300,400]]), np.array([0,200])], [[6,6],[6]]],\
+        #         None]
+        # adpt = [None,\
+        #         [np.array([[31,31],[-0.5,-0.5]]), [np.array([[100,200],[400,500]]), np.array([100,200])], [[6,6],[6]]]]
+        #ax_init_loc_stim = [None]*2
+        if stim is not None:
+            loca_n_stim, max_trial_stim, current_state_stim, current_trial_stim, trial_state_stim, all_done_stim, circle_stim = \
+                [None]*2, [None]*2, [None]*2, [None]*2, [None]*2, [None]*2, [None]*2 
+            for ax_i in range(2):
+                #*ax_init_loc_stim[ax_i], ax[ax_i] = init_loca(ax[ax_i], stim[ax_i], 'g')
+                loca_n_stim[ax_i], max_trial_stim[ax_i], current_state_stim[ax_i], current_trial_stim[ax_i], \
+                trial_state_stim[ax_i], all_done_stim[ax_i], circle_stim[ax_i], ax[ax_i] = init_loca(ax[ax_i], stim[ax_i], 'g')
+            circle_all = []
+            for cir in circle_stim:
+                if cir is not None:
+                    circle_all += cir
+        if adpt is not None:
+            loca_n_adpt, max_trial_adpt, current_state_adpt, current_trial_adpt, trial_state_adpt, all_done_adpt, circle_adpt = \
+                [None]*2, [None]*2, [None]*2, [None]*2, [None]*2, [None]*2, [None]*2 
+            for ax_i in range(2):
+                #*ax_init_loc_adpt[ax_i], ax[ax_i] = init_loca(ax[ax_i], stim[ax_i], 'g')
+                loca_n_adpt[ax_i], max_trial_adpt[ax_i], current_state_adpt[ax_i], current_trial_adpt[ax_i], \
+                trial_state_adpt[ax_i], all_done_adpt[ax_i], circle_adpt[ax_i], ax[ax_i] = init_loca(ax[ax_i], adpt[ax_i], 'C1', lw=1.5, fill=False, alpha=1)
+            if 'circle_all' not in locals():
+                circle_all = []
+            for cir in circle_adpt:
+                if cir is not None:
+                    circle_all += cir
+                            
+        def updatev(i):
+            value1.set_array(spkrate1[:,:,i])
+            value2.set_array(spkrate2[:,:,i])
+            title.set_text(u"time: {} ms".format(time_title[i]))
+            if stim is not None:
+                detect_event(i, 2, stim, loca_n_stim, all_done_stim, current_trial_stim, \
+                             trial_state_stim, current_state_stim, circle_stim, max_trial_stim)                
+            if adpt is not None:
+                detect_event(i, 2, adpt, loca_n_adpt, all_done_adpt, current_trial_adpt, \
+                             trial_state_adpt, current_state_adpt, circle_adpt, max_trial_adpt)                
+
+            if stim is not None or adpt is not None:
+                return (value1, value2, *circle_all, title) #, circle_adpt[ax_i][1]
+            else:
+                return value1, value2, title,
+        
+        ax[0].axis('off')
+        ax[1].axis('off')
+        ax[0].set_title(ax1title, fontsize=10)
+        ax[1].set_title(ax2title, fontsize=10)
+        
+        fig.suptitle(anititle)
+        ani=animation.FuncAnimation(fig, updatev, frames=frames, interval=interval_movie, blit=True)    # frames=spk1.shape[2]
+        return ani
 #%%
 def show_timev(v1, v2=None, vrange=[[-80,-50]], frames = 1000, start_time = 0, interval_movie=10, anititle=''):#, show_pattern_size=False, pattern_ctr=None, pattern_size=None):
     '''
