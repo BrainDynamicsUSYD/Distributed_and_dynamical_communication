@@ -24,6 +24,7 @@ import numpy as np
 
 import firing_rate_analysis as fra
 import frequency_analysis as fqa
+import cfc
 import fano_mean_match
 import connection as cn
 import pywt
@@ -176,7 +177,51 @@ cax.text(-3.2,1.03,'Amp. (a.u.)', ha='left',fontsize=10, transform=cax.transAxes
 fig.savefig('wavelet_spon_%.d.png'%loop_num)
 plt.close()
 #%%
+'''Theta-gamma coupling'''
 
+findcfc = cfc.cfc()
+Fs = 1000;
+phaseBand = np.arange(1,14.1,0.5)
+ampBand = np.arange(20,101,5) 
+phaseBandWid = 0.5 ;
+ampBandWid = 5 ;
+
+band1 = np.concatenate((phaseBand - phaseBandWid, ampBand - ampBandWid)).reshape(1,-1)
+band2 = np.concatenate((phaseBand + phaseBandWid, ampBand + ampBandWid)).reshape(1,-1)
+subBand = np.concatenate((band1,band2),0)
+subBand = subBand.T
+#
+##%%
+findcfc.timeDim = -1;
+findcfc.Fs = Fs; 
+findcfc.phaseBand = subBand[:len(phaseBand)];
+findcfc.ampBand = subBand[len(phaseBand):]
+findcfc.section_input_to_find_MI_cfc = None #[4000,40000]
+findcfc.optionSur = 2
+
+area = 'a1'
+start_time = 5000
+end_time = 10000
+mua1 = fra.get_spkcount_sum_sparmat(data.__dict__[area].ge.spk_matrix[mua_neuron], start_time, end_time,
+                   sample_interval = 1,  window = 1, dt = 0.1)/mua_neuron.shape[0]/0.001
+
+MI_raw, MI_surr, meanBinAmp = findcfc.find_cfc_from_rawsig(mua1,return_Ampdist=True)
+
+fig, ax1 = plt.subplots(1,1, figsize=[6,6])
+imcf = ax1.contourf(phaseBand, ampBand, MI_surr.T, 15)#, aspect='auto')
+imc = ax1.contour(phaseBand, ampBand, MI_surr.T, 15, colors='k', linewidths=0.6)#, aspect='auto')
+
+plt.colorbar(im1, ax=ax1)
+
+ax1.set_xlabel('Phase frequency (Hz)')
+ax1.set_xlabel('Amp. frequency (Hz)')
+ax1.set_title('area 1')
+
+fig.savefig('theta_gam_coup_%.d.png'%loop_num)
+plt.close()
+
+
+#%%
 '''Fano factor'''
 neu_range = fano_mua_range 
 bin_count_interval_hz = 5

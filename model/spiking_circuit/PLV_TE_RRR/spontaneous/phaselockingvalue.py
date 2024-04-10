@@ -45,7 +45,7 @@ savefile_name = 'phaseSyncmua_ctr_%d.file'%loop_num #'phaseSyncmua_spon%d.file'%
 mua_loca = [0, 0];   #[0, 0]  [-32, -32]
 
 
-analyStim = 1  # 1 for the condition with inputs, 0 for the spontaneous activity
+analyStim = 0 # 1 for the condition with inputs, 0 for the spontaneous activity
 surrogate = 1
 sameSampleSize = 1
 

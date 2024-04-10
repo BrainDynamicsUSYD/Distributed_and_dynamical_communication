@@ -604,7 +604,7 @@ with open(data_dir+'data%d.file'%loop_num, 'wb') as file:
 if get_movie:
     import firing_rate_analysis as fra
     import matplotlib.pyplot as plt
-    
+    title = ''
     '''load data'''
     data = mydata.mydata()
     data.load(data_dir+'data%d.file'%loop_num)
@@ -637,7 +637,7 @@ if get_movie:
     #frames = int(end_time - start_time)
     frames = data.a1.ge.spk_rate.spk_rate.shape[2]
     
-    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+    ani = fra.show_pattern_ms(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
                                             frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=None, adpt=None)
     
     ani.save('spontaneous_%d.mp4'%loop_num)
@@ -676,7 +676,7 @@ if get_movie:
     adpt = None
     #adpt = [None, [[[31,31]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[6]]]]
     #adpt = [[[[31,31]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[6]]]]
-    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+    ani = fra.show_pattern_ms(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
                                             frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
     
     ani.save('twoInputs_uncued_%d.mp4'%loop_num)
@@ -717,7 +717,7 @@ if get_movie:
         
     adpt = [None, [[[31.5,31.5]], [[[0, data.a1.ge.spk_rate.spk_rate.shape[-1]]]], [[chg_adapt_range]]]]
     #adpt = None
-    ani = fra.show_pattern(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
+    ani = fra.show_pattern_ms(spkrate1=data.a1.ge.spk_rate.spk_rate, spkrate2=data.a2.ge.spk_rate.spk_rate, \
                                             frames = frames, start_time = start_time, interval_movie=15, anititle=title,stim=stim, adpt=adpt)
     
     ani.save('twoInputs_cued_%d.mp4'%loop_num)
