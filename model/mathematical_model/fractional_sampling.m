@@ -29,7 +29,7 @@ p.a = 1.2;      p.gam = 100;      p.beta = 1;
 p.dt = 1e-3;    p.T = 2e2;      avg = 1;
 
 
-tri_n = 2; % number of trials
+tri_n = 20; % number of trials
 stim_num = 2; % number of stimuli
 if stim_num == 2
     p.stim_depth = [50 50]; % depth of potential well for stimuli
