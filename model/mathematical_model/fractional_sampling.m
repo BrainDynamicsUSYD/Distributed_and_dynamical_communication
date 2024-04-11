@@ -29,16 +29,14 @@ p.a = 1.2;      p.gam = 100;      p.beta = 1;
 p.dt = 1e-3;    p.T = 2e2;      avg = 1;
 
 
-tri_n = 2; % number of trials
+tri_n = 20; % number of trials
 stim_num = 2; % number of stimuli
 if stim_num == 2
     p.stim_depth = [50 50]; % depth of potential well for stimuli
     p.stim_loc = [0 0; 32 32]; % stimuli potential well locations
-    p.stim_modu_pk_radius = [12 12]; % effective range of stimuli modulation on the peak of the firing rate gaussian bump
 elseif stim_num == 1
     p.stim_depth = [50];
     p.stim_loc = [0 0];
-    p.stim_modu_pk_radius = [12];
 end
 
 
