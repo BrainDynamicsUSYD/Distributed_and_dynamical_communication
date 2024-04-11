@@ -129,7 +129,7 @@ plt.close()
 
 #%%
 '''
-Wavelet spectrogram of spontaneous activity
+A demo for wavelet spectrogram of spontaneous activity
 '''
 area = 'a1'
 start_time = 5500
