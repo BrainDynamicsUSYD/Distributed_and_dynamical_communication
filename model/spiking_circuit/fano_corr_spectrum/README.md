@@ -13,7 +13,7 @@
   The output of `two_inputs_simu.py` is a data file and/or movies.
   The data file (`data0.file` in this case) contains the spiking information of neurons and/or the recorded local field potential (LFP).
 
-- `analy_fano_corr_spect.py` is for the analyses of power spectrum, wavelet spectrogram, and top-down attention's effect on Fano factor and noise correlation.
+- `analy_fano_corr_spect.py` is for the analyses of power spectrum, wavelet spectrogram, theta-gamma coupling and top-down attention's effect on Fano factor and noise correlation.
   Run it by
   ```
   python analy_fano_corr_spect.py 0
