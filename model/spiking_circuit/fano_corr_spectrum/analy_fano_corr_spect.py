@@ -7,7 +7,7 @@ Created on Sun Nov 21 17:38:45 2021
 """
 
 '''
-1. get the power spectrum of spontaneous activity
+1. get the power spectrum and the theta-gamma coupling of spontaneous activity
 2. analyse the top-down attention's effect on Fano factor and noise correlation
 
 run 'two_inputs_simu.py' before running this script.
@@ -24,7 +24,7 @@ import numpy as np
 
 import firing_rate_analysis as fra
 import frequency_analysis as fqa
-import cfc
+from cfc_analysis import cfc
 import fano_mean_match
 import connection as cn
 import pywt
@@ -89,7 +89,7 @@ mua_loca = [0, 0]
 mua_range = 5 
 mua_neuron = cn.findnearbyneuron.findnearbyneuron(data.a1.param.e_lattice, mua_loca, mua_range, data.a1.param.width)
 #%%
-'''Power spectrum of spontaneous MUA activity'''
+'''A demo for calculating power spectrum of spontaneous MUA''' 
 
 start_t = np.arange(5000, 9001, 1000)
 end_t = start_t + 1000
@@ -177,7 +177,7 @@ cax.text(-3.2,1.03,'Amp. (a.u.)', ha='left',fontsize=10, transform=cax.transAxes
 fig.savefig('wavelet_spon_%.d.png'%loop_num)
 plt.close()
 #%%
-'''Theta-gamma coupling'''
+'''A demo for calculating theta-gamma coupling'''
 
 findcfc = cfc.cfc()
 Fs = 1000;
@@ -214,7 +214,7 @@ imc = ax1.contour(phaseBand, ampBand, MI_surr.T, 15, colors='k', linewidths=0.6)
 plt.colorbar(im1, ax=ax1)
 
 ax1.set_xlabel('Phase frequency (Hz)')
-ax1.set_xlabel('Amp. frequency (Hz)')
+ax1.set_ylabel('Amp. frequency (Hz)')
 ax1.set_title('area 1')
 
 fig.savefig('theta_gam_coup_%.d.png'%loop_num)

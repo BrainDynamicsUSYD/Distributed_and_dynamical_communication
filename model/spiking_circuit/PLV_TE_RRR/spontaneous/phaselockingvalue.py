@@ -199,9 +199,23 @@ else:
     
     
     simu_time_tot = data.param.simutime
-    data.a1.ge.get_sparse_spk_matrix([data.a1.param.Ne, simu_time_tot*10], 'csc')
-    data.a2.ge.get_sparse_spk_matrix([data.a2.param.Ne, simu_time_tot*10], 'csc')
+    if hasattr(data.a1.ge, 'spk_matrix'):
+        data.a1.ge.get_spk_it()
+        data.a2.ge.get_spk_it()
+        data.a1.ge.spk_matrix = data.a1.ge.spk_matrix.tocsc()
+        data.a2.ge.spk_matrix = data.a2.ge.spk_matrix.tocsc()
     
+    elif hasattr(data.a1.ge, 't_ind'):
+        data.a1.ge.get_sparse_spk_matrix_csrindptr([data.a1.param.Ne, simu_time_tot*10], mat_type='csc')
+        data.a2.ge.get_sparse_spk_matrix_csrindptr([data.a2.param.Ne, simu_time_tot*10], mat_type='csc')
+        data.a1.ge.get_spk_it()
+        data.a2.ge.get_spk_it()
+    
+    else:    
+        data.a1.ge.get_sparse_spk_matrix([data.a1.param.Ne, simu_time_tot*10], 'csc')
+        data.a2.ge.get_sparse_spk_matrix([data.a2.param.Ne, simu_time_tot*10], 'csc')
+ 
+   
     spk_mat_MUA_1 = data.a1.ge.spk_matrix[mua_neuron].copy()
     spk_mat_MUA_2 = data.a2.ge.spk_matrix[mua_neuron].copy()
     

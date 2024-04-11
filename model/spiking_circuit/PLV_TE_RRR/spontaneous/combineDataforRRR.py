@@ -47,7 +47,7 @@ for spk_posi in ['ctr']: # 'cor'
             MUA_2_all_net_ = np.empty(repeat, dtype=object)
 
             
-            for loop_num in range(0, 30):
+            for loop_num in range(0, repeat):
                 # pyfile_name = 'rg%d_%ssua_%s_local_%s%s_%d.file'%(mua_range,spk_posi,sync_n, sfx, name_sfx, loop_num)
                 pyfile_name = 'rg%d_%ssua_%s_local_subM%d_%d.file'%(mua_range,spk_posi,sync_n,  substract_mean, loop_num)
 

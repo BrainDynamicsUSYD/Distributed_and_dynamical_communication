@@ -50,3 +50,5 @@ Run `two_inputs_simu.py` with one input argument, e.g.,
 
 - `run.pbs` is a PBS script for running simulations and analysis for multiple networks simultaneously on cluster.
 Note that `combineDataforRRR.py` and `RRR.m` still need to be run separately after running `run.pbs` to complete the RRR analysis. 
+
+- `spontaneous` contains the scripts for doing the same analyses as described above, but for the spontaneous activity.

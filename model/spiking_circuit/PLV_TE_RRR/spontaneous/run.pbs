@@ -16,9 +16,9 @@
 cd "$PBS_O_WORKDIR"
 
 # Path to scripts
-script_path=/Path_to_/Distributed_and_dynamical_communication/model/spiking_circuit/PLV_TE_RRR
+script_path=/Path_to_/Distributed_and_dynamical_communication/model/spiking_circuit/PLV_TE_RRR/spontaneous
 
-simulation_file=two_inputs_simu.py
+simulation_file=spon_simu.py
 simulation_file2=onoff_detection.py
 simulation_file3=phaselockingvalue.py
 simulation_file4=transfer_entropy.py

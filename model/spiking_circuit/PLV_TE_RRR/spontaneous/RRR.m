@@ -41,9 +41,9 @@ sprintf('topdown: %d',topdown)
 
 mkdir RRR_results
 if ridgeInit == 0
-    results_dir = ['results/', condi, '_RRR_syncUnsync_rg5', rv, '/']; %'results/';    
+    results_dir = ['RRR_results/', condi, '_RRR_syncUnsync_rg5', rv, '/']; %'results/';    
 else
-    results_dir = ['results/', condi, '_ridgeRRR_syncUnsync_rg5', rv, '/']; %'results/';
+    results_dir = ['RRR_results/', condi, '_ridgeRRR_syncUnsync_rg5', rv, '/']; %'results/';
 end
 
 mkdir(sprintf('%s',results_dir))
@@ -64,8 +64,8 @@ saveFigSuffix = ['_syncUnsync_lc_rg5',rv]; % _whole
 
 
     
-load(['raw_data/spon_rg5_ctrsua_sync_local_subM1.mat'])
-load(['raw_data/spon_rg5_ctrsua_unsync_local_subM1.mat'])
+load(['raw_data/spon_rg5_ctrsua_sync_local_subM1_comb.mat'])
+load(['raw_data/spon_rg5_ctrsua_unsync_local_subM1_comb.mat'])
 % 
 if topdown
     X_ctrSpk_syncCtr_spon = a2_rg5_ctrsua_sync_spon_lc_ctr;
@@ -245,7 +245,7 @@ errorbar(1, m_spon, sem_spon , 'Color',[0,0,0])
 xticks( 1 )
 xticklabels({'spon'})
 % y_text = max(m_spon+sem_spon)*1.2;
-% text(1.5, y_text, sprintf('p = %.5f', ranksum(optDim_all_spon,optDim_all_att)))
+% text(1.5, y_text, sprintf('p = %.5f', ttest(optDim_all_spon,optDim_all_att)))
 % plot([1 1 2 2], [y_text-0.4, y_text-0.2, y_text-0.2, y_text-0.4], 'Color', [0,0,0])
 
 hold off
@@ -279,9 +279,11 @@ errorbar(2, m_spon_ridge, sem_spon_ridge , 'Color',[0,0,0])
 
 y_text_across = max(m_spon_rrr+sem_spon_rrr,m_spon_ridge+sem_spon_ridge)*1.2;
 
-text(1.5, y_text_across, sprintf('p = %.5f', ranksum(perf_opt_RRR_spon,perf_opt_ridge_spon)))
+[~,p] = ttest(perf_opt_RRR_spon,perf_opt_ridge_spon);
+text(1.5, y_text_across, sprintf('p = %.5f', p))
 plot([1 1 2 2], [y_text_across*0.90, y_text_across*0.93, y_text_across*0.93, y_text_across*0.90], 'Color', [0,0,0])
-
+perf_opt_RRR_spon
+perf_opt_ridge_spon
 
 
 xticks([ 1 2])
@@ -335,9 +337,9 @@ errorbar(0, 1-m_full, ...
     sem_full, ...
     '^-', 'Color', clr(1,:), 'MarkerFaceColor', clr(1,:), 'MarkerSize', mksize, 'DisplayName','full model sync')
 
-optDim = get_optDim(m_rrr, sem_rrr);
-txt_y1 = 1 - m_rrr(optDim) + sem_rrr(optDim) + 0.01;
-text(optDim-0.2, txt_y1, append('\downarrow','Dim:',num2str(optDim)))
+% optDim = get_optDim(m_rrr, sem_rrr);
+% txt_y1 = 1 - m_rrr(optDim) + sem_rrr(optDim) + 0.01;
+% text(optDim-0.2, txt_y1, append('\downarrow','Dim:',num2str(optDim)))
 
 [ylim_min1_spon, ylim_max1_spon] = get_ylim([m_full;sem_full], [m_rrr;sem_rrr]);
 

@@ -235,7 +235,7 @@ for spk_posi in ['ctr']:  # 'ctr', 'cor'
             # #data_anly.load(dataAnaly_path+'data_anly_onoff_thres%s%d.file'%(sfx,loop_num)) # data_anly_onoff_thres_cor; data_anly_onoff_thres
             
             data.load(datapath+'data%d.file'%loop_num)
-            data_anly.load(dataAnaly_path+'data_anly_onoff_testthres_win10_min10_smt1_mtd1_%s%d.file'%(sfx,loop_num))
+            data_anly.load(dataAnaly_path+'data_anly_onoff_testthres_win10_min10_smt1_mtd1_%s_%d.file'%(sfx,loop_num))
             # n_perStimAmp = data.a1.param.stim1.n_perStimAmp
             # n_StimAmp = data.a1.param.stim1.n_StimAmp
             
@@ -245,8 +245,21 @@ for spk_posi in ['ctr']:  # 'ctr', 'cor'
             # spon_rate2 = np.sum((data.a2.ge.t < end) & (data.a2.ge.t >= start))/15/data.a2.param.Ne
             
             simu_time_tot = data.param.simutime
-            data.a1.ge.get_sparse_spk_matrix([data.a1.param.Ne, simu_time_tot*10], 'csc')
-            data.a2.ge.get_sparse_spk_matrix([data.a2.param.Ne, simu_time_tot*10], 'csc')
+            if hasattr(data.a1.ge, 'spk_matrix'):
+                data.a1.ge.get_spk_it()
+                data.a2.ge.get_spk_it()
+                data.a1.ge.spk_matrix = data.a1.ge.spk_matrix.tocsc()
+                data.a2.ge.spk_matrix = data.a2.ge.spk_matrix.tocsc()
+        
+            elif hasattr(data.a1.ge, 't_ind'):
+                data.a1.ge.get_sparse_spk_matrix_csrindptr([data.a1.param.Ne, simu_time_tot*10], mat_type='csc')
+                data.a2.ge.get_sparse_spk_matrix_csrindptr([data.a2.param.Ne, simu_time_tot*10], mat_type='csc')
+                data.a1.ge.get_spk_it()
+                data.a2.ge.get_spk_it()
+        
+            else:
+                data.a1.ge.get_sparse_spk_matrix([data.a1.param.Ne, simu_time_tot*10], 'csc')
+                data.a2.ge.get_sparse_spk_matrix([data.a2.param.Ne, simu_time_tot*10], 'csc')
             
             # spon_start = 5000; spon_end = 20000
             # spk_matrix_spon_1 = data.a1.ge.spk_matrix[neu, spon_start*10:spon_end*10].copy()

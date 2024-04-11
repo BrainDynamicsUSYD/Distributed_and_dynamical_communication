@@ -21,7 +21,7 @@ import connection as cn
 import coordination as cd
 
 import sys
-#import os
+import os
 import matplotlib.pyplot as plt
 import time
 
@@ -449,8 +449,8 @@ def get_TE_delay(MUA_1_all, MUA_2_all, delay_list, auto_embd, \
         
         # delay = 10
         
-        # Create a TE calculator and run it:
-        # teCalcClass = JPackage("infodynamics.measures.continuous.kraskov").TransferEntropyCalculatorKraskov
+        # 
+        # 
         teCalc = teCalcClass()
         teCalc.setProperty("k", "4") # Use Kraskov parameter K=4 for 4 nearest points
         # teCalc.initialise(trg_History_d, trg_History_tau, src_History_d, src_History_tau, delay) # Use target history length of kHistoryLength (Schreiber k)
@@ -481,15 +481,8 @@ def get_TE_delay(MUA_1_all, MUA_2_all, delay_list, auto_embd, \
         teCalc.startAddObservations()
         
         for trial in range(0,numTrials):
-        	# Create a new trial, with destArray correlated to
-        	#  previous value of sourceArray:
-        # 	sourceArray = [random.normalvariate(0,1) for r in range(numObservations)]
-        # 	destArray = [0] + [sum(pair) for pair in zip([covariance*y for y in sourceArray[0:numObservations-1]], \
-        # 		[(1-covariance)*y for y in [random.normalvariate(0,1) for r in range(numObservations-1)]] ) ]
-        	
-            	# Add observations for this trial:
-        	# print("Adding trial %d ..." % trial, end=' ')
-            	teCalc.addObservations(JArray(JDouble, 1)((MUA_1_all[trial]/len(neu_id)/(mua_win*0.001)).tolist()), 
+
+            teCalc.addObservations(JArray(JDouble, 1)((MUA_1_all[trial]/len(neu_id)/(mua_win*0.001)).tolist()), 
                                     JArray(JDouble, 1)((MUA_2_all[trial]/len(neu_id)/(mua_win*0.001)).tolist()))
         
         # We've finished adding trials:
