@@ -22,6 +22,8 @@ scipy
 pywavelets (https://pywavelets.readthedocs.io/en/latest/index.html)  
 scikit-learn  
 pylevy (https://github.com/josemiotto/pylevy)  
+JIDT (https://github.com/jlizier/jidt)  
+JPype  
 matplotlib  
 Matlab 2019b  
 MATLAB Engine API for Python (https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html)
