@@ -1,6 +1,6 @@
 # Distributed and dynamical communication
 
-Code for the paper "Distributed and dynamical communication: A mechanism for flexible cortico-cortical interactions and its functional roles in visual attention"
+Code for the paper "Distributed and dynamical communication: A mechanism for flexible cortico-cortical interactions and its functional roles in visual attention", Ni, S., Harris, B. & Gong, P., Commun Biol 7, 550 (2024)
 
 ## Structure
 
