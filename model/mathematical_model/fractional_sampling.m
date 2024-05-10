@@ -59,7 +59,7 @@ neurang = 5; % neurons within 'neurang' to the center will be analysed
 loc_neu_cho = latt(dist_n <= neurang, :);%  coordinates of the neurons chosen to be analysed
 p.neurang = neurang;
 
-win_all = [55]; % window length for Fano factor and noise corraltion
+win_all = [55]/1000; % spike count window length for Fano factor and noise corraltion
 
 fano  = zeros(length(loc_neu_cho), length(win_all), tri_n); % Fano factor
 mean_spk  = zeros(length(loc_neu_cho), length(win_all), tri_n); % mean of spike counts
@@ -102,9 +102,15 @@ for tri = 1:tri_n
 
 
     % On and Off duration
-    [on_times, off_times] = onoff_t(X, p, 10, [0 0]);
+    [on_times, off_times] = onoff_t(X, p, 5, [0 0]);
     p.on_times{tri} = on_times;
     p.off_times{tri} = off_times;
+
+    % Sampling probability
+    hw = 32;
+    dist = get_dist(X, [0,0], hw);
+    visit_p = sum((dist < 5))/numel(dist)     ;
+    p.visit_p(tri,1) = visit_p;
 
     % find the increase in the baseline firing rate by attention
     dist_neu = get_dist(loc_neu_cho', p.location, hw);
@@ -267,7 +273,7 @@ function [X,t] = fHMC_quadratic(p,avg, init_x)
     v = zeros(2,avg); %+[1;1];
     ca = gamma(a-1)/(gamma(a/2).^2);
     
-    pd = makedist('Stable', 'alpha',a, 'gam', p.gam);
+    pd = makedist('Stable', 'alpha',a, 'gam', p.gam^(1/a));
 
     X = zeros(2,n,avg);
     for i = 1:n        
